@@ -1,0 +1,32 @@
+#!/bin/sh
+set -eu
+PROJECT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+if [ -n "${STACKCHAN_NODE:-}" ]; then
+  NODE_BIN=$STACKCHAN_NODE
+elif command -v node >/dev/null 2>&1; then
+  NODE_BIN=$(command -v node)
+else
+  echo '需要 Node.js 22 或以上；请将 node 加入 PATH，或用 STACKCHAN_NODE 指定已有 Node 路径。' >&2
+  exit 1
+fi
+if [ ! -x "$NODE_BIN" ]; then
+  echo '需要 Node.js 22 或以上；可用 STACKCHAN_NODE 指定已有 Node 路径。' >&2
+  exit 1
+fi
+cd "$PROJECT_DIR"
+if [ "${1:-}" = cloudflare ]; then
+  shift
+  exec "$NODE_BIN" "$PROJECT_DIR/cloudflare.mjs" "$@"
+fi
+if [ "${1:-}" = test ]; then
+  shift
+  if [ "$#" -eq 0 ]; then
+    set -- "$PROJECT_DIR"/test/*.test.mjs
+  fi
+  exec "$NODE_BIN" --test "$@"
+fi
+if [ "${1:-}" = service ]; then
+  shift
+  exec "$NODE_BIN" "$PROJECT_DIR/scripts/service.mjs" "$@"
+fi
+exec "$NODE_BIN" "$PROJECT_DIR/bridge.mjs" "$@"

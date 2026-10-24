@@ -1,0 +1,16 @@
+bridge.local.json
+bridge.local.json.*
+.state/
+.local/
+node_modules/
+.wrangler/
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+*.log
+*.pem
+*.key
+__pycache__/
+*.py[cod]
+.DS_Store
