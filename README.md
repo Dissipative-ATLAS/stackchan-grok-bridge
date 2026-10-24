@@ -16,13 +16,10 @@ Mac 负责中转，StackChan 继续使用原厂 AI Agent 的模型、语音和�
 
 ## 连接方式
 
-```mermaid
-flowchart LR
-    S[StackChan 原厂 AI Agent] <-->|原厂云 MCP| M[Mac 中转]
-    M -->|Webhook 提交任务| G[已有 Grok Bot]
-    G -->|HTTPS 结果回调| C[Cloudflare Worker 信箱]
-    M -->|主动取回结果| C
-    M -->|工具结果| S
+```text
+StackChan 原厂 AI Agent ⇄ 原厂云 MCP ⇄ Mac 中转 → Grok Bot
+                                      ↑           │
+                                      └─ Cloudflare 结果信箱 ← HTTPS 回调
 ```
 
 自动续查发生在原厂 AI Agent 的当前会话中：每次工具调用最多等待 4.5 秒，未完成时返回任务编号和续查凭据，让 Agent 先朗读进度，再继续查询同一任务。Mac 需保持唤醒、联网，机器人也需联网；两者可以使用不同网络。
